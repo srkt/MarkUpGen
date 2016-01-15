@@ -9,6 +9,10 @@
 
         var pattern;
 
+        if (typeof options === 'string') {
+            pattern = options;
+        }
+
         if (options && typeof options === 'object') {
             for (var option in options) {
                 if (options.hasOwnProperty(option)) {
@@ -18,9 +22,7 @@
             pattern = defaultOpts.pattern;
         }
 
-        if (typeof options === 'string') {
-            pattern = options;
-        }
+
 
 
         if (!pattern || typeof pattern !== 'string') {
@@ -54,7 +56,7 @@
     tempElem = 'div.temp-elem@style=display:none;';;
         this.tempElem = tempElem;
 
-        flattenPattern(pattern);
+        pattern = flattenPattern(pattern);
 
         this.flattenPattern = flattenPattern;
 
@@ -67,6 +69,10 @@
         domPattern = (defaultOpts.parentId || '') + ".parent-emmetter" + (!pattern ? "" : ">" + pattern);
 
         this.editPattern = function (pattern) {
+            if (pattern.indexOf("^^^^^") !== -1) {
+                debugger;
+                console.log(pattern);
+            }
             domPattern = domPattern + (pattern || "");
         };
 
@@ -616,6 +622,8 @@
             var patReg = new RegExp('[^' + breakpoints.trim() + ']+', 'i');
 
             var hierarchy = pattern.split(patReg);
+            hierarchy.pop();
+            hierarchy.shift();
 
             hierarchy.forEach(function (x) {
                 currentLevel = currentLevel + (bpval[x] || 0);
@@ -631,8 +639,8 @@
             var pattern = '';
 
             for (var i = 0; i < element.count; i++) {
-
-                pattern = pattern + element.element + (element.level > 0 ? HtmlGenerator.multiply('^', element.level).join('') + tempElem : '');
+                console.log(element.level);
+                pattern = pattern + (i > 0 ? '+' : '') +  element.element + (element.level > 0 ? HtmlGenerator.multiply('^', element.level).join('') + tempElem : '');
 
             }
 
@@ -669,17 +677,34 @@
 
                 count++;
                 matches = subgroupPattern.exec(patternCopy);
+
+                if (matches === null) {
+                    patternStack.push({
+                        placeholderId: count,
+                        element: patternCopy,
+                        expandedElement:patternCopy,
+                        count: 0
+                    });
+                }
             }
+
+
             var finalResult = '';
 
+
             for (var i = 1; i < patternStack.length; i++) {
-                debugger;
+          
                 var r = new RegExp('::' + i + '::', 'gi'),
                     currentElem = patternStack[i]['expandedElement'],
                     prevElement = patternStack[i - 1]['expandedElement'];
 
                 finalResult = finalResult + currentElem.replace(r, prevElement);
             }
+
+            if (patternStack.length === 1)
+                finalElement = patternStack[0]['expandedElement'];
+
+
 
             return finalResult;
 
@@ -757,7 +782,14 @@
             }
 
             breakpointArray.forEach(function (x) {
-                currentLevel = currentLevel + (bpval[x] || 0);
+                if (x.length > 1) {
+                    x.split('').forEach(function(y) {
+                        currentLevel = currentLevel + (bpval[y] || 0);
+                    });
+                } else {
+                    currentLevel = currentLevel + (bpval[x] || 0);
+
+                }
             });
 
             return currentLevel;
@@ -790,7 +822,16 @@
 
             //flattenHierarchy();
             readjustElementPattern(); //readjusts for multiples
-            return buildDom();
+            var resultElem = buildDom();
+
+            var tempelems = resultElem.getElementsByClassName('temp-elem');
+
+            for (var i = 0; i < tempelems.length; i++) {
+                console.log(tempelems[i].parentNode);
+                tempelems[i].parentNode.removeChild(tempelems[i]);
+            }
+
+            return resultElem;
 
         };
     }
@@ -804,10 +845,10 @@
 
 
         if (emmetter instanceof HtmlGenerator) {
-
+            debugger;
             level = emmetter.getLevel(),
             pat = level > 0 ? HtmlGenerator.multiply('^', level).join('') + this.tempElem : '';
-
+            console.log(level);
             resultEmmetter = emmetter.toString() + pat;
         }
 
@@ -951,7 +992,7 @@
 
     var htmlgen = function () {
 
-        debugger;
+        
         var args = Array.prototype.slice.call(arguments);
 
         var F = function () { };

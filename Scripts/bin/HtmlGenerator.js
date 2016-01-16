@@ -1019,7 +1019,7 @@
 
             },
             content: function (data) {
-                that.editPattern("{{" + data + "}");
+                that.editPattern("[[" + data + "]]");
                 return that;
             }
 
@@ -1048,4 +1048,3 @@
 
 
 }());
-

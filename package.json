@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/srkt/MarkUpGen/issues"
   },
-  "homepage": "https://github.com/srkt/MarkUpGen"
+  "homepage": "https://github.com/srkt/MarkUpGen",
+  "devDependencies": {
+    "gulp-jasmine-phantom": "^2.0.1"
+  }
 }

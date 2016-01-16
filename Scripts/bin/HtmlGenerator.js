@@ -69,10 +69,6 @@
         domPattern = (defaultOpts.parentId || '') + ".parent-emmetter" + (!pattern ? "" : ">" + pattern);
 
         this.editPattern = function (pattern) {
-            if (pattern.indexOf("^^^^^") !== -1) {
-                debugger;
-                console.log(pattern);
-            }
             domPattern = domPattern + (pattern || "");
         };
 
@@ -177,7 +173,7 @@
                 }
 
             });
-            // console.log(flattenedDom);
+            // //console.log(flattenedDom);
 
 
 
@@ -265,7 +261,7 @@
               closingTag = "";
 
 
-            // console.log(elementStack.length);
+            // //console.log(elementStack.length);
 
             if (!strPattern || strPattern.length === 0) {
                 throw new Error("Invalid pattern passed for dom generation");
@@ -279,7 +275,7 @@
 
             var elemDetails = strPattern.split(reg);
 
-            //         console.log(elemDetails);
+            //         //console.log(elemDetails);
 
             var startElem = elemDetails[0];
 
@@ -303,8 +299,8 @@
                         element['class'] = [];
 
                     var cn = elemDetails[i + 1];
-                    //   debugger;
-                    //console.log(!isValidClassName(cn));
+                    //   ;
+                    ////console.log(!isValidClassName(cn));
 
                     if (!isValidClassName(cn))
                         throw new Error('invalid class name ' + cn);
@@ -406,10 +402,12 @@
 
         }
 
+        this.finalDomElement;
+
         function generateDomElement(strPattern) {
 
 
-            // debugger;
+            // ;
             var element,
                 closingTag = "";
 
@@ -433,9 +431,9 @@
 
             var elemDetails = getsplitPatternToElementArray(strPattern);
 
-            console.log(strPattern);
+            //console.log(strPattern);
 
-            console.log(elemDetails);
+            //console.log(elemDetails);
 
             var startElem = elemDetails[0],
                 tagName = 'div';
@@ -503,7 +501,7 @@
 
             if (element.nodeType === 1 && dataElem !== null) {
                 // var reg = /(?:(\[\[).*(\]\]$))/gi;
-                //  console.log(reg.exec(dataElem));
+                //  //console.log(reg.exec(dataElem));
                 element.innerHTML = dataElem.substring(2, dataElem.length - 2);
             }
 
@@ -563,7 +561,44 @@
             }
 
             return element;
+
+
         }
+
+        function removeTempElements(elm) {
+
+            ;
+            var tempelem = elm.getElementsByClassName('temp-elem');
+
+            while (tempelem && tempelem.length) {
+
+                for (var i = 0; i < tempelem.length; i++) {
+
+                    if (tempelem[i].nodeType === 1) 
+                        tempelem[i].parentNode.removeChild(tempelem[i]);
+
+
+                }
+                tempelem = elm.getElementsByClassName('temp-elem');
+            }
+
+            return elm;
+
+        }
+
+        function cleanElement(element) {
+            return function (cleaningFunc) {
+
+                if (typeof cleaningFunc !== 'function') {
+                    return element;
+                }
+
+                return cleaningFunc(element);
+
+            }
+        };
+
+
 
         function buildDom() {
 
@@ -639,8 +674,8 @@
             var pattern = '';
 
             for (var i = 0; i < element.count; i++) {
-                console.log(element.level);
-                pattern = pattern + (i > 0 ? '+' : '') +  element.element + (element.level > 0 ? HtmlGenerator.multiply('^', element.level).join('') + tempElem : '');
+                //console.log(element.level);
+                pattern = pattern + (i > 0 ? '+' : '') + element.element + (element.level > 0 ? HtmlGenerator.multiply('^', element.level).join('') + tempElem : '');
 
             }
 
@@ -648,9 +683,11 @@
 
 
         }
+        this.flattenPattern = flattenPattern;
 
         function flattenPattern(pattern) {
 
+            debugger;
             var patternStack = [];
 
             if (!pattern)
@@ -682,7 +719,7 @@
                     patternStack.push({
                         placeholderId: count,
                         element: patternCopy,
-                        expandedElement:patternCopy,
+                        expandedElement: patternCopy,
                         count: 0
                     });
                 }
@@ -693,12 +730,18 @@
 
 
             for (var i = 1; i < patternStack.length; i++) {
-          
-                var r = new RegExp('::' + i + '::', 'gi'),
-                    currentElem = patternStack[i]['expandedElement'],
-                    prevElement = patternStack[i - 1]['expandedElement'];
 
-                finalResult = finalResult + currentElem.replace(r, prevElement);
+                var r = new RegExp('::' + i + '::', 'gi'),
+                    currentElem = patternStack[i]['expandedElement'];
+               //     prevElement = patternStack[i - 1]['expandedElement'];
+
+               if(i===1)
+               finalResult = patternStack[i - 1]['expandedElement'];
+
+               finalResult = currentElem.replace(r, finalResult);
+             //   patternStack[i - 1]['expandedElement'] = finalResult;
+
+               // finalResult = finalResult + mdfiedElm;// currentElem.replace(r, prevElement);
             }
 
             if (patternStack.length === 1)
@@ -769,8 +812,8 @@
             elementArray = elemCopy;
             breakpointArray = hierarchyCopy;
 
-            console.log(elementArray);
-            console.log(breakpointArray);
+            //console.log(elementArray);
+            //console.log(breakpointArray);
         }
 
         this.getLevel = function () {
@@ -783,7 +826,7 @@
 
             breakpointArray.forEach(function (x) {
                 if (x.length > 1) {
-                    x.split('').forEach(function(y) {
+                    x.split('').forEach(function (y) {
                         currentLevel = currentLevel + (bpval[y] || 0);
                     });
                 } else {
@@ -823,15 +866,10 @@
             //flattenHierarchy();
             readjustElementPattern(); //readjusts for multiples
             var resultElem = buildDom();
+            var cleanELem = cleanElement(resultElem);
 
-            var tempelems = resultElem.getElementsByClassName('temp-elem');
+            return cleanELem(removeTempElements);
 
-            for (var i = 0; i < tempelems.length; i++) {
-                console.log(tempelems[i].parentNode);
-                tempelems[i].parentNode.removeChild(tempelems[i]);
-            }
-
-            return resultElem;
 
         };
     }
@@ -845,15 +883,15 @@
 
 
         if (emmetter instanceof HtmlGenerator) {
-            debugger;
+
             level = emmetter.getLevel(),
             pat = level > 0 ? HtmlGenerator.multiply('^', level).join('') + this.tempElem : '';
-            console.log(level);
+            //console.log(level);
             resultEmmetter = emmetter.toString() + pat;
         }
 
         if (typeof emmetter === 'string')
-            this.flattenPattern(pattern);
+            resultEmmetter = this.flattenPattern(emmetter);
 
         return resultEmmetter;
 
@@ -992,7 +1030,7 @@
 
     var htmlgen = function () {
 
-        
+
         var args = Array.prototype.slice.call(arguments);
 
         var F = function () { };
@@ -1002,7 +1040,6 @@
 
         HtmlGenerator.apply(f, args);
 
-
         return f;
 
     };
@@ -1011,5 +1048,4 @@
 
 
 }());
-
 

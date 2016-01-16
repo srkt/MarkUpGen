@@ -1,0 +1,23 @@
+{
+  "name": "MarkUpGen",
+  "version": "1.0.0",
+  "description": "Html generator ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srkt/MarkUpGen.git"
+  },
+  "keywords": [
+    "html",
+    "gen"
+  ],
+  "author": "Ravi Kanth",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/srkt/MarkUpGen/issues"
+  },
+  "homepage": "https://github.com/srkt/MarkUpGen"
+}

@@ -1,4 +1,8 @@
-﻿var result = (function () {
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+window.HtmlGenerator = require('../dist/HtmlGenerator');
+
+},{"../dist/HtmlGenerator":2}],2:[function(require,module,exports){
+module.exports = (function () {
 
     function HtmlGenerator(options) {
 
@@ -227,7 +231,8 @@
             return obj === '@';
         }
 
-        function DomElement() {
+// ReSharper disable once UnusedLocals
+        function domElement() {
             this.class = [];
             this.id = "";
             this.attributes = [];
@@ -247,6 +252,7 @@
 
         var elementStack = [];
 
+        //unused
         function generateElement(strPattern) {
 
             var element = {
@@ -531,9 +537,24 @@
 
                     refElem = elementStack[elementStack.length - 1];
 
-                    lastNode = refElem.hasChildNodes() ? refElem.childNodes[refElem.childNodes.length - 1] : null;
-                    console.log(lastNode);
-                    refElem.insertBefore(generateDomElement(elementArray[currentElemIndex]), lastNode);
+                        
+
+                        //lastNode = refElem.hasChildNodes() ? refElem.childNodes[refElem.childNodes.length - 1] : null;
+
+                        //refElem.insertBefore(generateDomElement(elementArray[currentElemIndex]), lastNode);
+
+
+
+                    (function(re,ce) {
+                        var siblingElement = generateDomElement(elementArray[currentElemIndex]);
+
+                        //lastNode = re.hasChildNodes() ? re.childNodes[re.childNodes.length - 1] : null;
+
+                        lastNode = re.hasChildNodes() ? re.childNodes[0] : null;
+
+
+                        re.insertBefore(siblingElement, lastNode);  //ce || null b + c + d 
+                    }(refElem, element));
 
                 } else {
 
@@ -556,6 +577,7 @@
 
                 }
 
+                console.log(elementStack);
 
             }
 
@@ -573,7 +595,7 @@
 
                 for (var i = 0; i < tempelem.length; i++) {
 
-                    if (tempelem[i].nodeType === 1) 
+                    if (tempelem[i].nodeType === 1)
                         tempelem[i].parentNode.removeChild(tempelem[i]);
 
 
@@ -667,6 +689,19 @@
 
         }
 
+        function multiply(pat, no) {
+
+            var r = [];
+
+            for (var i = 0; i < no; i++) {
+                r.push(pat);
+            }
+
+            return r;
+        }
+
+        HtmlGenerator.multiply = multiply;
+
         function expandElem(element) {
 
 
@@ -674,7 +709,7 @@
 
             for (var i = 0; i < element.count; i++) {
                 //console.log(element.level);
-                pattern = pattern + (i > 0 ? '+' : '') + element.element + (element.level > 0 ? HtmlGenerator.multiply('^', element.level).join('') + tempElem : '');
+                pattern = pattern + (i > 0 ? '+' : '') + element.element + (element.level > 0 ? multiply('^', element.level).join('') + tempElem : '');
 
             }
 
@@ -731,15 +766,15 @@
 
                 var r = new RegExp('::' + i + '::', 'gi'),
                     currentElem = patternStack[i]['expandedElement'];
-               //     prevElement = patternStack[i - 1]['expandedElement'];
+                //     prevElement = patternStack[i - 1]['expandedElement'];
 
-               if(i===1)
-               finalResult = patternStack[i - 1]['expandedElement'];
+                if (i === 1)
+                    finalResult = patternStack[i - 1]['expandedElement'];
 
-               finalResult = currentElem.replace(r, finalResult);
-             //   patternStack[i - 1]['expandedElement'] = finalResult;
+                finalResult = currentElem.replace(r, finalResult);
+                //   patternStack[i - 1]['expandedElement'] = finalResult;
 
-               // finalResult = finalResult + mdfiedElm;// currentElem.replace(r, prevElement);
+                // finalResult = finalResult + mdfiedElm;// currentElem.replace(r, prevElement);
             }
 
             if (patternStack.length === 1)
@@ -750,19 +785,6 @@
             return finalResult;
 
         }
-
-        function multiply(pat, no) {
-
-            var r = [];
-
-            for (var i = 0; i < no; i++) {
-                r.push(pat);
-            }
-
-            return r;
-        }
-
-        HtmlGenerator.multiply = multiply;
 
         function readjustElementPattern() {
 
@@ -1017,7 +1039,7 @@
 
             },
             content: function (data) {
-                that.editPattern("[[" + data + "]]");
+                that.editPattern("{{" + data + "}");
                 return that;
             }
 
@@ -1042,12 +1064,14 @@
 
     };
 
+    //window['HtmlGenerator'] = htmlgen;
+
     return htmlgen;
+    // window.HtmlGenerator = htmlgen;
 
-
+    //  module.exports = htmlgen;
 }());
 
-console.log(result);
 
-module.exports = result;
 
+},{}]},{},[1]);

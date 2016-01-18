@@ -1,5 +1,7 @@
 ﻿/// <reference path="../../Scripts/jasmine/jasmine.js" />
 /// <reference path="~/Scripts/bin/HtmlGenerator.js" />
+
+var HtmlGenerator = require('../dist/HtmlGenerator.js');
 describe('Html generator tests', function () {
 
 
@@ -11,18 +13,20 @@ describe('Html generator tests', function () {
 
 
     beforeEach(function () {
+        console.log(HtmlGenerator);
         htmlgen = HtmlGenerator('.row');
         pattern = ".a>.b#c+(.d>.e>#f>(.h@i=j)*2)*2";
     });
 
-    it('flattenpattern check', function () {
+    it('flattenpattern check', function() {
         expect(htmlgen).not.toBeUndefined();
         var result = htmlgen.flattenPattern(pholder[2][0]);
         expect(result).toEqual(pholder[2][1]);
-    })
+    });
 
     afterEach(function () {
 
     });
+
 
 });

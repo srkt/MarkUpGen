@@ -1,4 +1,4 @@
-﻿(function () {
+﻿module.exports = (function () {
 
     function HtmlGenerator(options) {
 
@@ -227,7 +227,8 @@
             return obj === '@';
         }
 
-        function DomElement() {
+// ReSharper disable once UnusedLocals
+        function domElement() {
             this.class = [];
             this.id = "";
             this.attributes = [];
@@ -247,6 +248,7 @@
 
         var elementStack = [];
 
+        //unused
         function generateElement(strPattern) {
 
             var element = {
@@ -531,10 +533,24 @@
 
                     refElem = elementStack[elementStack.length - 1];
 
+                        
 
-                    lastNode = refElem.hasChildNodes() ? refElem.childNodes[refElem.childNodes.length - 1] : null;
+                        //lastNode = refElem.hasChildNodes() ? refElem.childNodes[refElem.childNodes.length - 1] : null;
 
-                    refElem.insertBefore(generateDomElement(elementArray[currentElemIndex]), lastNode);
+                        //refElem.insertBefore(generateDomElement(elementArray[currentElemIndex]), lastNode);
+
+
+
+                    (function(re,ce) {
+                        var siblingElement = generateDomElement(elementArray[currentElemIndex]);
+
+                        //lastNode = re.hasChildNodes() ? re.childNodes[re.childNodes.length - 1] : null;
+
+                        lastNode = re.hasChildNodes() ? re.childNodes[0] : null;
+
+
+                        re.insertBefore(siblingElement, lastNode);  //ce || null b + c + d 
+                    }(refElem, element));
 
                 } else {
 
@@ -557,6 +573,7 @@
 
                 }
 
+                console.log(elementStack);
 
             }
 
@@ -574,7 +591,7 @@
 
                 for (var i = 0; i < tempelem.length; i++) {
 
-                    if (tempelem[i].nodeType === 1) 
+                    if (tempelem[i].nodeType === 1)
                         tempelem[i].parentNode.removeChild(tempelem[i]);
 
 
@@ -668,6 +685,19 @@
 
         }
 
+        function multiply(pat, no) {
+
+            var r = [];
+
+            for (var i = 0; i < no; i++) {
+                r.push(pat);
+            }
+
+            return r;
+        }
+
+        HtmlGenerator.multiply = multiply;
+
         function expandElem(element) {
 
 
@@ -675,7 +705,7 @@
 
             for (var i = 0; i < element.count; i++) {
                 //console.log(element.level);
-                pattern = pattern + (i > 0 ? '+' : '') + element.element + (element.level > 0 ? HtmlGenerator.multiply('^', element.level).join('') + tempElem : '');
+                pattern = pattern + (i > 0 ? '+' : '') + element.element + (element.level > 0 ? multiply('^', element.level).join('') + tempElem : '');
 
             }
 
@@ -687,7 +717,6 @@
 
         function flattenPattern(pattern) {
 
-            debugger;
             var patternStack = [];
 
             if (!pattern)
@@ -733,15 +762,15 @@
 
                 var r = new RegExp('::' + i + '::', 'gi'),
                     currentElem = patternStack[i]['expandedElement'];
-               //     prevElement = patternStack[i - 1]['expandedElement'];
+                //     prevElement = patternStack[i - 1]['expandedElement'];
 
-               if(i===1)
-               finalResult = patternStack[i - 1]['expandedElement'];
+                if (i === 1)
+                    finalResult = patternStack[i - 1]['expandedElement'];
 
-               finalResult = currentElem.replace(r, finalResult);
-             //   patternStack[i - 1]['expandedElement'] = finalResult;
+                finalResult = currentElem.replace(r, finalResult);
+                //   patternStack[i - 1]['expandedElement'] = finalResult;
 
-               // finalResult = finalResult + mdfiedElm;// currentElem.replace(r, prevElement);
+                // finalResult = finalResult + mdfiedElm;// currentElem.replace(r, prevElement);
             }
 
             if (patternStack.length === 1)
@@ -752,19 +781,6 @@
             return finalResult;
 
         }
-
-        function multiply(pat, no) {
-
-            var r = [];
-
-            for (var i = 0; i < no; i++) {
-                r.push(pat);
-            }
-
-            return r;
-        }
-
-        HtmlGenerator.multiply = multiply;
 
         function readjustElementPattern() {
 
@@ -1044,8 +1060,12 @@
 
     };
 
-    window.HtmlGenerator = htmlgen;
+    //window['HtmlGenerator'] = htmlgen;
 
+    return htmlgen;
+    // window.HtmlGenerator = htmlgen;
 
+    //  module.exports = htmlgen;
 }());
+
 

@@ -4,7 +4,7 @@ describe('temp tests', function () {
 
 
     it('1+1=2', function() {
-        expect(1+2).teEqual(3);
+        expect(1+2).toEqual(3);
     });
 
 });

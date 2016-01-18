@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>App</title>
+    <script src="Scripts/app/output/htmlgen.js"></script>
+
+    <style>
+        body {
+            width: 100%;
+        }
+
+        .a {
+            width: 60%;
+            float: left;
+            background-color: orangered;
+        }
+
+        .e {
+            width: 40%;
+            float: left;
+            background-color: yellow;
+        }
+
+        .b, .c, .d {
+            height: 200px;
+            float: left;
+            width: 40px;
+            margin: 50px 20px;
+            border: 1px solid black;
+        }
+
+        .b {
+            background-color: red;
+        }
+
+        .c {
+            background-color: blue;
+        }
+
+        .d {
+            background-color: green;
+        }
+
+        .f {
+            background-color: white;
+            width: 20px;
+            height: 20px;
+            margin: 5px;
+            float: left;
+        }
+    </style>
+
+
+    <script>
+
+        window.onload = function (e) {
+            var html = HtmlGenerator('.a>(.b[[Sai Ravi Kanth]]+.c>.f*6)*4+.d^.e>.f*4');
+            document.body.appendChild(html.generateDom());
+        };
+    </script>
+</head>
+<body>
+
+</body>
+</html>

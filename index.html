@@ -48,18 +48,48 @@
             margin: 5px;
             float: left;
         }
-    </style>
 
+        .g {
+            background-color: violet;
+            width: 20px;
+            height: 20px;
+            margin: 5px;
+            float: left;
+        }
+    </style>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
 
     <script>
+        function YoCallMe(val) {
+            alert('Yo buddy u called me with ' + val);
+        }
 
         window.onload = function (e) {
-            var html = HtmlGenerator('.a>(.b[[Sai Ravi Kanth]]+.c>.f*6)*4+.d^.e>.f*4');
-            document.body.appendChild(html.generateDom());
+            //var html = HtmlGenerator('.a>(.b[[Sai Ravi Kanth]]+.c>.f*8^.g*4)*4+.d^.e>.f*4');
+            var externalHtml = HtmlGenerator("form.row@method=post>.col-md-10.col-md-offset-1>.well>h1@style=margin:10px 5px;[[Sample form]]^^.col-md-10.col-md-offset-1>(.row>.col-md-4>h3@style=color:red;[[Some text]]^.col-md-8>input.form-control@type=button;@placeholder=sometext)*8+.col-md-12>input.btn.btn-primary.pull-right@type=button;@value=Submit@onclick=YoCallMe('hello world')");
+
+            var myemitter = HtmlGenerator(".row>.col-md-12>.well>h1[[My awesome page]]*1000");
+            myemitter.moveUp(2).add(externalHtml);
+            myemitter.drawTo('.sample');
+
         };
     </script>
 </head>
 <body>
 
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="sample col-md-6"></div>
+                <div class="sample col-md-6"></div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="sample col-md-6"></div>
+                <div class="sample col-md-6"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

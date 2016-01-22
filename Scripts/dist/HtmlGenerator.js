@@ -30,30 +30,31 @@
         }
 
         var breakpoints = ">^+",
-    attributes = ".#@",
-    hierarchyCheck = 0,
-    attrMapper = {
-        '.': 'class',
-        '#': 'id',
-        '@': 'attribute'
-    },
-    elementArray,
-    breakpointArray,
-    finalElement = {},
-    classRegex = new RegExp('-?[_a-zA-Z]+[_a-zA-Z0-9-]*', 'i'),
-    idRegex = new RegExp('^[a-zA-Z]+[a-zA-Z0-9-_:.]*', 'i'),
-    attributeName = new RegExp('^[a-zA-Z][a-zA-Z0-9]+', 'i'),
-    dataRegex = new RegExp('\\[\\[[a-zA-Z].*\\]\\]', 'i'), //{{[a-zA-Z][a-zA-Z0-9]+\s*}}
-    // attributeValue = new RegExp('.*[' + breakpoints + ']$', 'i'),
-    subgroupPattern = /(?:\()([^\(\)]*)(?:\))(?:\*)(\d+)?/i,
-    currentElemIndex = 0,
-    heirarchyIndex = 0,
-    bpval = {
-        "+": 0,
-        ">": 1,
-        "^": -1
-    },
-    tempElem = 'div.temp-elem@style=display:none;';;
+            attributes = ".#@",
+            hierarchyCheck = 0,
+            attrMapper = {
+                '.': 'class',
+                '#': 'id',
+                '@': 'attribute'
+            },
+            elementArray,
+            breakpointArray,
+            finalElement = {},
+            classRegex = new RegExp('-?[_a-zA-Z]+[_a-zA-Z0-9-]*', 'i'),
+            idRegex = new RegExp('^[a-zA-Z]+[a-zA-Z0-9-_:.]*', 'i'),
+            attributeName = new RegExp('^[a-zA-Z][a-zA-Z0-9]+', 'i'),
+            elementRegex = /[a-zA-Z][a-zA-Z-:]+/i,
+            dataRegex = new RegExp('\\[\\[[a-zA-Z].*\\]\\]', 'i'), //{{[a-zA-Z][a-zA-Z0-9]+\s*}}
+            // attributeValue = new RegExp('.*[' + breakpoints + ']$', 'i'),
+            subgroupPattern = /(?:\()([^\(\)]*)(?:\))(?:\*)(\d+)?/i,
+            currentElemIndex = 0,
+            heirarchyIndex = 0,
+            bpval = {
+                "+": 0,
+                ">": 1,
+                "^": -1
+            },
+            tempElem = 'div.temp-elem@style=display:none;';
         this.tempElem = tempElem;
 
         pattern = flattenPattern(pattern);
@@ -80,8 +81,6 @@
             return domPattern;
         };
 
-
-
         function isValidClassName(str) {
             return classRegex.test(str);
         }
@@ -89,6 +88,63 @@
         function isValidId(str) {
             return idRegex.test(str);
         }
+
+        this.generatedDom = undefined;
+        function drawTo(selector) {
+
+            if (!selector) {
+                throw new Error('Invalid selector passed');
+            }
+
+            var reg = /(^\.|^#)?([a-zA-Z-_:]+$)/i;
+
+            var match = selector.match(reg);
+
+            if (!match) {
+                throw new Error('invalid selector passed');
+            }
+
+            var elems;
+
+            var idClass = match[1],matchName = match[2];
+
+            if (!idClass) {
+                elems = document.getElementsByTagName(matchName);
+            } else {
+                
+                if (idClass === '.') {
+
+                    elems = document.getElementsByClassName(matchName);
+                } else {
+                    elems = document.getElementById(matchName);
+
+                }
+            }
+
+
+            var newDom;
+            var that = this;
+            if (elems.length) {
+                
+                for (var i = 0; i < elems.length; i++) {
+                    (function (elem, data) {
+                        var child = null;
+                        if (elem.hasChildNodes()) {
+                            child = elem.childNodes[elem.childNodes.length - 1];
+                        }
+                        elem.insertBefore(data, child ? child.nextSibling : null);
+                    })(elems[i],new HtmlGenerator(that.toString()).generateDom());
+
+                }
+            } else {
+                newDom = new HtmlGenerator(that.toString()).generateDom();
+                elems.appendChild(newDom);
+            }
+
+
+        }
+
+        this.drawTo = drawTo;
 
         function isValidAttributeName(str) {
             return attributeName.test(str);
@@ -173,7 +229,7 @@
                 }
 
             });
-            // //console.log(flattenedDom);
+            // ////console.log(flattenedDom);
 
 
 
@@ -263,7 +319,7 @@
               closingTag = "";
 
 
-            // //console.log(elementStack.length);
+            // ////console.log(elementStack.length);
 
             if (!strPattern || strPattern.length === 0) {
                 throw new Error("Invalid pattern passed for dom generation");
@@ -277,7 +333,7 @@
 
             var elemDetails = strPattern.split(reg);
 
-            //         //console.log(elemDetails);
+            //         ////console.log(elemDetails);
 
             var startElem = elemDetails[0];
 
@@ -302,7 +358,7 @@
 
                     var cn = elemDetails[i + 1];
                     //   ;
-                    ////console.log(!isValidClassName(cn));
+                    //////console.log(!isValidClassName(cn));
 
                     if (!isValidClassName(cn))
                         throw new Error('invalid class name ' + cn);
@@ -433,9 +489,9 @@
 
             var elemDetails = getsplitPatternToElementArray(strPattern);
 
-            //console.log(strPattern);
+            ////console.log(strPattern);
 
-            //console.log(elemDetails);
+            ////console.log(elemDetails);
 
             var startElem = elemDetails[0],
                 tagName = 'div';
@@ -503,7 +559,7 @@
 
             if (element.nodeType === 1 && dataElem !== null) {
                 // var reg = /(?:(\[\[).*(\]\]$))/gi;
-                //  //console.log(reg.exec(dataElem));
+                //  ////console.log(reg.exec(dataElem));
                 element.innerHTML = dataElem.substring(2, dataElem.length - 2);
             }
 
@@ -566,14 +622,14 @@
                     });
 
                     refElem = elementStack[elementStack.length - 1];
-
+                    
                     lastNode = refElem.hasChildNodes() ? refElem.childNodes[refElem.childNodes.length - 1] : null;
                     refElem.insertBefore(generateDomElement(elementArray[currentElemIndex]), lastNode);
 
 
                 }
 
-                console.log(elementStack);
+                //console.log(elementStack);
 
             }
 
@@ -698,13 +754,17 @@
 
         HtmlGenerator.multiply = multiply;
 
+        HtmlGenerator.setPattern = function(pattern) {
+            return new HtmlGenerator(pattern);
+        }
+
         function expandElem(element) {
 
 
             var pattern = '';
 
             for (var i = 0; i < element.count; i++) {
-                //console.log(element.level);
+                ////console.log(element.level);
                 pattern = pattern + (i > 0 ? '+' : '') + element.element + (element.level > 0 ? multiply('^', element.level).join('') + tempElem : '');
 
             }
@@ -725,7 +785,7 @@
             var patternCopy = pattern, count = 1;
 
             var matches = subgroupPattern.exec(patternCopy);
-
+            
             if (!matches)
                 return pattern;
 
@@ -828,8 +888,8 @@
             elementArray = elemCopy;
             breakpointArray = hierarchyCopy;
 
-            //console.log(elementArray);
-            //console.log(breakpointArray);
+            ////console.log(elementArray);
+            ////console.log(breakpointArray);
         }
 
         this.getLevel = function () {
@@ -902,7 +962,7 @@
 
             level = emmetter.getLevel(),
             pat = level > 0 ? HtmlGenerator.multiply('^', level).join('') + this.tempElem : '';
-            //console.log(level);
+            ////console.log(level);
             resultEmmetter = emmetter.toString() + pat;
         }
 
